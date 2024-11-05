@@ -1,0 +1,12 @@
+galaxy_info:
+  standalone: true
+  role_name: klusterize
+  namespace: msavini
+  author: mattx
+  description: search_cluster_role
+  platforms:
+    name: Linux
+    versions: all
+  license: "GPL-2.0-or-later"
+  min_ansible_version: "2.1"
+  galaxy_tags: []

@@ -1,0 +1,6 @@
+---
+- name: Generate Certificates
+  ansible.builtin.include_tasks: generate_certs.yaml
+
+- name: Operations
+  ansible.builtin.include_tasks: operations.yaml

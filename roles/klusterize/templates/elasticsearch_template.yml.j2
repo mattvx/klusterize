@@ -1,0 +1,21 @@
+cluster.name: {{ klusterize_elasticsearch_cluster_name }}
+node.name: {{ item.name }}
+network.host: {{item.name }}
+http.port: {{  }}
+transport.port: {{  }}
+discovery.seed_hosts:
+{% for item in klusterize_cluster %}
+  - {{ item.ip }}
+{% endfor %}
+cluster.initial_master_nodes: ["{{ klusterize_cluster_initial_master_node }}"]
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.key: {{ klusterize_elasticsearch_cert_folder }}/{{ item.name }}-key.pem
+xpack.security.transport.ssl.certificate: {{ klusterize_elasticsearch_cert_folder }}/{{ item.name }}-cert.pem
+xpack.security.transport.ssl.certificate_authorities: {{ klusterize_elasticsearch_cert_folder }}/{{ klusterize_ca_cert_name }}.pem
+xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.verification_mode: certificate
+xpack.security.http.ssl.key: {{ klusterize_elasticsearch_cert_folder }}/{{ item.name }}-key.pem
+xpack.security.http.ssl.certificate: {{ klusterize_elasticsearch_cert_folder }}/{{ item.name }}-cert.pem
+xpack.security.http.ssl.certificate_authorities: {{ klusterize_elasticsearch_cert_folder }}/{{ klusterize_ca_cert_name }}.pem

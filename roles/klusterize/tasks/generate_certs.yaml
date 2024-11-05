@@ -1,0 +1,63 @@
+# CA
+
+- name: Create folder to put certs before copying
+  ansible.builtin.file:
+    path: '{{ klusterize_spool_folder }}'
+    state: directory
+    mode: "0600"
+  delegate_to: localhost
+
+- name: Generate an OpenSSL private key for the self signed CA
+  community.crypto.openssl_privatekey:
+    path: '{{ klusterize_spool_folder }}/{{ klusterize_ca_key_name }}.pem'
+    size: '{{ klusterize_ca_rsa_key_lenght }}'
+    passphrase: '{{ klusterize_ca_rsa_key_password }}'
+    cipher: auto
+  delegate_to: localhost
+
+- name: Generating CA CSR in pipe
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: '{{ klusterize_spool_folder }}/{{ klusterize_ca_key_name }}.pem'
+    privatekey_passphrase: '{{ klusterize_ca_rsa_key_password }}'
+    common_name: '{{ klusterize_ca_common_name }}'
+  register: ca_csr_pipe
+  delegate_to: localhost
+
+- name: Create self-signed CA certificate from CSR
+  community.crypto.x509_certificate:
+    path: '{{ klusterize_spool_folder }}/{{ klusterize_ca_cert_name }}.pem'
+    csr_content: "{{ ca_csr_pipe.csr }}"
+    privatekey_path: '{{ klusterize_spool_folder }}/{{ klusterize_ca_key_name }}.pem'
+    privatekey_passphrase: '{{ klusterize_ca_rsa_key_password }}'
+    provider: selfsigned
+  delegate_to: localhost
+
+# NODES
+
+- name: Generate an OpenSSL private key for each node in the cluster
+  community.crypto.openssl_privatekey:
+    path: '{{ klusterize_spool_folder }}/{{ item.name }}-key.pem'
+    size: '{{ klusterize_ca_rsa_key_lenght }}'
+  loop: '{{ klusterize_cluster }}'
+  delegate_to: localhost
+
+- name: Generating CSR for each node
+  community.crypto.openssl_csr:
+    privatekey_path: '{{ klusterize_spool_folder }}/{{ item.name }}-key.pem'
+    common_name: '{{ item.name }}'
+    path: '{{ klusterize_spool_folder }}/{{ item.name }}-csr.pem'
+  loop: '{{ klusterize_cluster }}'
+  delegate_to: localhost
+
+- name: Sign certificate with our CA
+  community.crypto.x509_certificate:
+    csr_path: '{{ klusterize_spool_folder }}/{{ item.name }}-csr.pem'
+    provider: ownca
+    ownca_path: '{{ klusterize_spool_folder }}/{{ klusterize_ca_cert_name }}.pem'
+    ownca_privatekey_path: '{{ klusterize_spool_folder }}/{{ klusterize_ca_key_name }}.pem'
+    ownca_privatekey_passphrase: '{{ klusterize_ca_rsa_key_password }}'
+    ownca_not_after: '{{ klusterize_nodes_certs_validity }}'
+    ownca_not_before: "-1d"
+    path: '{{ klusterize_spool_folder }}/{{ item.name }}-cert.pem'
+  loop: '{{ klusterize_cluster }}'
+  delegate_to: localhost

@@ -1,0 +1,69 @@
+# INSTALL ELASTICSEARCH ADDING REPO AND APT KEY
+- name: Add Elastic keyring file
+  ansible.builtin.apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    keyring: /usr/share/keyrings/elasticsearch-keyring.gpg
+  become: true
+  when: add_elastic_repository | bool
+
+- name: Add Elastic repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main"
+    state: present
+    filename: elastic-8.x.list
+  become: true
+  when: add_elastic_repository | bool
+
+- name: Install Elastic package
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - "elasticsearch=8.15.2"
+  become: true
+
+# ENSURE SERVICE IS STOPPED
+- name: Ensure elastic is stopped
+  ansible.builtin.systemd:
+    name: elasticsearch
+    state: stopped
+    enabled: true
+
+# COPY GENERATED CONF TO EVERY MACHINE
+- name: Copying each conf file to correct machine
+  ansible.windows.win_copy:
+    src: '{{ klusterize_spool_folder }}/elasticsearch_{{ item.name }}.yml'
+    dest: '/etc/elasticsearch/elasticsearch.yml'
+    user: elasticsearch
+    group: elasticsearch
+    remote_src: true
+    backup: true
+  when: ansible_host == item.ip
+  loop: '{{ klusterize_cluster }}'
+
+# ENSURE ELASTIC IS STARTED
+- name: Ensure elastic is started
+  ansible.builtin.systemd:
+    name: elasticsearch
+    state: started
+    enabled: true
+
+# make sum checks here instead of arbitary waiting
+- name: Wait for elastic to be up
+  ansible.builtin.wait_for:
+    timeout: 120
+  delegate_to: localhost
+
+- name: Elastic 7 - password command
+  ansible.builtin.command: '/usr/share/elasticsearch/bin/elasticsearch-reset-password --auto --batch --username elastic'
+  register: elastic_password_cmd
+  changed_when: elastic_password_cmd.rc != 0
+
+- name: Setting some facts
+  ansible.builtin.set_fact:
+    elasticsearch_password: "{{ elastic_password_cmd.stdout | regex_search('(?<=New value: )(.*)(?=$)') }}"
+
+- name: Writing passwords to a file
+  ansible.builtin.copy:
+    content: |
+      {{ elasticsearch_password }} - Elasticsearch password
+    dest: '{{ setup_path }}/elastic_passwords'

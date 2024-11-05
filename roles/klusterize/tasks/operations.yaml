@@ -1,0 +1,57 @@
+# EDITING HOSTS FILE OF OUR NODES
+
+- name: Editing our nodes hosts file to add references to each node
+  ansible.builtin.blockinfile:
+    block: |
+      {% for node in klusterize_cluster %}
+      {{ node.name }}  {{ node.ip }}
+      {% endfor %}
+    insertafter: EOF
+    dest: test
+    backup: true
+  become: true
+
+# GENERATE ELASTICSEARCH CONFIGURATION FILES
+
+- name: Generating elasticsearch configuration files
+  ansible.builtin.template:
+    src: elasticsearch_template.yml.j2
+    dest: '{{ klusterize_spool_folder }}/elasticsearch_{{ item.name }}.yml'
+  loop: '{{ klusterize_cluster }}'
+  delegate_to: localhost
+
+# COPY CERTS TO MACHINES
+
+- name: Ensure that cert folder exists
+  ansible.builtin.file:
+    path: '{{ klusterize_elasticsearch_cert_folder }}'
+    user: elasticsearch
+    group: elasticsearch
+    mode: '0700'
+    state: directory
+
+- name: Copy generated CA to each host
+  ansible.builtin.copy:
+    src: '{{ klusterize_spool_folder }}/{{ klusterize_ca_cert_name }}.pem'
+    user: elasticsearch
+    group: elasticsearch
+    mode: '0600'
+    dest: '{{ klusterize_elasticsearch_cert_folder }}/{{ klusterize_ca_cert_name }}.pem'
+
+- name: Copy generated Certificates to each host
+  ansible.builtin.file:
+    src: '{{ klusterize_spool_folder }}/{{ item.name }}-cert.pem'
+    user: elasticsearch
+    group: elasticsearch
+    mode: '0600'
+    dest: '{{ klusterize_elasticsearch_cert_folder }}/{{ item.name }}-cert.pem'
+  loop: '{{ klusterize_cluster }}'
+
+- name: Copy generated Keys to each host
+  ansible.builtin.file:
+    src: '{{ klusterize_spool_folder }}/{{ item.name }}-key.pem'
+    user: elasticsearch
+    group: elasticsearch
+    mode: '0600'
+    dest: '{{ klusterize_elasticsearch_cert_folder }}/{{ item.name }}-key.pem'
+  loop: '{{ klusterize_cluster }}'

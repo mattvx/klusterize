@@ -1,0 +1,29 @@
+---
+# Elasticsearch cluster definition
+klusterize_cluster:
+  - name: node0
+    ip: "10.75.55.38"
+  - name: node1
+    ip: "10.75.55.39"
+  - name: node2
+    ip: "10.75.55.40"
+
+# FOLDER WHERE WE'LL SAVE INTERMEDIATE STUFF
+klusterize_spool_folder: "/tmp/klusterize_folder"
+
+# CA VARS
+klusterize_ca_key_name: "ca-key"
+klusterize_ca_cert_name: "ca-cert"
+klusterize_ca_common_name: 'madebyansible'
+klusterize_ca_rsa_key_lenght: 2048
+klusterize_ca_rsa_key_password: "Ansible!"
+
+# NODE CERT VALIDITY
+klusterize_nodes_certs_validity: "+3650d"
+
+# ELASTICSEARCH MASTER NODE (must be the name of a node defined in our klusterize_kluster var)
+klusterize_cluster_initial_master_node: "node0"
+klusterize_elasticsearch_cluster_name: "ansiblecluster"
+klusterize_elasticsearch_cert_folder: "/etc/elasticsearch/ssl"
+klusterize_elasticsearch_cluster_http_port: 9200
+klusterize_elasticsearch_cluster_transport_port: 9300
