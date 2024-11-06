@@ -54,7 +54,6 @@
   ansible.builtin.command: '/usr/share/elasticsearch/bin/elasticsearch-reset-password --auto --batch --username elastic'
   register: elastic_password_cmd
   changed_when: elastic_password_cmd.rc != 0
-  when: ansible_host == 
 
 - name: Setting some facts
   ansible.builtin.set_fact:
