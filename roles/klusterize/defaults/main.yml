@@ -2,11 +2,11 @@
 # Elasticsearch cluster definition
 klusterize_cluster:
   - name: node0
-    ip: "10.75.55.38"
+    ip: 10.75.55.38
   - name: node1
-    ip: "10.75.55.39"
+    ip: 10.75.55.39
   - name: node2
-    ip: "10.75.55.40"
+    ip: 10.75.55.40
 
 # FOLDER WHERE WE'LL SAVE INTERMEDIATE STUFF
 klusterize_spool_folder: "/tmp/klusterize_folder"
