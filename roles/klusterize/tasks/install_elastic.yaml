@@ -1,30 +1,29 @@
-# INSTALL ELASTICSEARCH ADDING REPO AND APT KEY
-- name: Add Elastic keyring file
-  ansible.builtin.apt_key:
-    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
-    keyring: /usr/share/keyrings/elasticsearch-keyring.gpg
-  become: true
+# # INSTALL ELASTICSEARCH ADDING REPO AND APT KEY
+# - name: Add Elastic keyring file
+#   ansible.builtin.apt_key:
+#     url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+#     keyring: /usr/share/keyrings/elasticsearch-keyring.gpg
+#   become: true
 
-- name: Add Elastic repository
-  ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main"
-    state: present
-    filename: elastic-8.x.list
-  become: true
+# - name: Add Elastic repository
+#   ansible.builtin.apt_repository:
+#     repo: "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main"
+#     state: present
+#     filename: elastic-8.x.list
+#   become: true
 
-- name: Install Elastic package
-  ansible.builtin.apt:
-    update_cache: true
-    pkg:
-      - "elasticsearch=8.15.2"
-  become: true
+# - name: Install Elastic package
+#   ansible.builtin.apt:
+#     update_cache: true
+#     pkg:
+#       - "elasticsearch=8.15.2"
+#   become: true
 
 # ENSURE SERVICE IS STOPPED
 - name: Ensure elastic is stopped
   ansible.builtin.systemd:
     name: elasticsearch
     state: stopped
-    enabled: true
 
 # COPY GENERATED CONF TO EVERY MACHINE
 - name: Copying each conf file to correct machine
@@ -55,6 +54,7 @@
   ansible.builtin.command: '/usr/share/elasticsearch/bin/elasticsearch-reset-password --auto --batch --username elastic'
   register: elastic_password_cmd
   changed_when: elastic_password_cmd.rc != 0
+  when: ansible_host == 
 
 - name: Setting some facts
   ansible.builtin.set_fact:
