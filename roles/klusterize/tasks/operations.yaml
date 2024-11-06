@@ -20,13 +20,21 @@
   loop: '{{ klusterize_cluster }}'
   delegate_to: localhost
 
-# COPY CERTS TO MACHINES
+# ENSURE GROUP AND USER EXISTS
+
+- name: Ensure that elasticsearch group exists
+  ansible.builtin.group:
+    name: elasticsearch
+    state: present
+  become: true
 
 - name: Ensure that elasticsearch user exists
   ansible.builtin.user:
     name: elasticsearch
     group: elasticsearch
   become: true
+
+# COPY CERTS TO MACHINES
 
 - name: Ensure that cert folder exists
   ansible.builtin.file:
