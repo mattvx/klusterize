@@ -39,7 +39,7 @@
 - name: Ensure that cert folder exists
   ansible.builtin.file:
     path: '{{ klusterize_elasticsearch_cert_folder }}'
-    user: elasticsearch
+    owner: elasticsearch
     group: elasticsearch
     mode: '0700'
     state: directory
@@ -47,7 +47,7 @@
 - name: Copy generated CA to each host
   ansible.builtin.copy:
     src: '{{ klusterize_spool_folder }}/{{ klusterize_ca_cert_name }}.pem'
-    user: elasticsearch
+    owner: elasticsearch
     group: elasticsearch
     mode: '0600'
     dest: '{{ klusterize_elasticsearch_cert_folder }}/{{ klusterize_ca_cert_name }}.pem'
@@ -55,7 +55,7 @@
 - name: Copy generated Certificates to each host
   ansible.builtin.file:
     src: '{{ klusterize_spool_folder }}/{{ item.name }}-cert.pem'
-    user: elasticsearch
+    owner: elasticsearch
     group: elasticsearch
     mode: '0600'
     dest: '{{ klusterize_elasticsearch_cert_folder }}/{{ item.name }}-cert.pem'
@@ -64,7 +64,7 @@
 - name: Copy generated Keys to each host
   ansible.builtin.file:
     src: '{{ klusterize_spool_folder }}/{{ item.name }}-key.pem'
-    user: elasticsearch
+    owner: elasticsearch
     group: elasticsearch
     mode: '0600'
     dest: '{{ klusterize_elasticsearch_cert_folder }}/{{ item.name }}-key.pem'
