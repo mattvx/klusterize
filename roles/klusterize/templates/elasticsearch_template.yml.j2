@@ -1,8 +1,8 @@
 cluster.name: {{ klusterize_elasticsearch_cluster_name }}
 node.name: {{ item.name }}
 network.host: {{item.name }}
-http.port: {{  }}
-transport.port: {{  }}
+http.port: {{ klusterize_elasticsearch_cluster_http_port }}
+transport.port: {{ klusterize_elasticsearch_cluster_transport_port }}
 discovery.seed_hosts:
 {% for item in klusterize_cluster %}
   - {{ item.ip }}

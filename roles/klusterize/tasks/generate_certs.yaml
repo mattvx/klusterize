@@ -3,6 +3,12 @@
 - name: Create folder to put certs before copying
   ansible.builtin.file:
     path: '{{ klusterize_spool_folder }}'
+    state: absent
+  delegate_to: localhost
+
+- name: Create folder to put certs before copying
+  ansible.builtin.file:
+    path: '{{ klusterize_spool_folder }}'
     state: directory
     mode: "0700"
   delegate_to: localhost
