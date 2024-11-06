@@ -43,6 +43,7 @@
     group: elasticsearch
     mode: '0700'
     state: directory
+  become: true
 
 - name: Copy generated CA to each host
   ansible.builtin.copy:
@@ -51,6 +52,7 @@
     group: elasticsearch
     mode: '0600'
     dest: '{{ klusterize_elasticsearch_cert_folder }}/{{ klusterize_ca_cert_name }}.pem'
+  become: true
 
 - name: Copy generated Certificates to each host
   ansible.builtin.file:
@@ -60,6 +62,7 @@
     mode: '0600'
     dest: '{{ klusterize_elasticsearch_cert_folder }}/{{ item.name }}-cert.pem'
   loop: '{{ klusterize_cluster }}'
+  become: true
 
 - name: Copy generated Keys to each host
   ansible.builtin.file:
@@ -69,3 +72,4 @@
     mode: '0600'
     dest: '{{ klusterize_elasticsearch_cert_folder }}/{{ item.name }}-key.pem'
   loop: '{{ klusterize_cluster }}'
+  become: true
