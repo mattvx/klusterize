@@ -7,7 +7,7 @@
       {{ node.name }}  {{ node.ip }}
       {% endfor %}
     insertafter: EOF
-    dest: test
+    dest: /etc/hosts
     backup: true
   become: true
 
@@ -21,6 +21,12 @@
   delegate_to: localhost
 
 # COPY CERTS TO MACHINES
+
+- name: Ensure that elasticsearch user exists
+  ansible.builtin.user:
+    name: elasticsearch
+    group: elasticsearch
+  become: true
 
 - name: Ensure that cert folder exists
   ansible.builtin.file:
