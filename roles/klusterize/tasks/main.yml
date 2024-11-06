@@ -1,9 +1,9 @@
----
-- name: Generate Certificates
-  ansible.builtin.include_tasks: generate_certs.yaml
+# ---
+# - name: Generate Certificates
+#   ansible.builtin.include_tasks: generate_certs.yaml
 
-- name: Operations
-  ansible.builtin.include_tasks: operations.yaml
+# - name: Operations
+#   ansible.builtin.include_tasks: operations.yaml
 
 - name: Install Elasticsearch
   ansible.builtin.include_tasks: install_elastic.yaml
