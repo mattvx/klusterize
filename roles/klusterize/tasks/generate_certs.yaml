@@ -4,7 +4,7 @@
   ansible.builtin.file:
     path: '{{ klusterize_spool_folder }}'
     state: directory
-    mode: "0600"
+    mode: "0700"
   delegate_to: localhost
 
 - name: Generate an OpenSSL private key for the self signed CA
