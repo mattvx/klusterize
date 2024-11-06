@@ -55,7 +55,7 @@
   become: true
 
 - name: Copy generated Certificates to each host
-  ansible.builtin.file:
+  ansible.builtin.copy:
     src: '{{ klusterize_spool_folder }}/{{ item.name }}-cert.pem'
     owner: elasticsearch
     group: elasticsearch
@@ -65,7 +65,7 @@
   become: true
 
 - name: Copy generated Keys to each host
-  ansible.builtin.file:
+  ansible.builtin.copy:
     src: '{{ klusterize_spool_folder }}/{{ item.name }}-key.pem'
     owner: elasticsearch
     group: elasticsearch
