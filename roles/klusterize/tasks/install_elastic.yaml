@@ -50,7 +50,7 @@
 # make sum checks here instead of arbitary waiting
 - name: Wait for elastic to be up
   ansible.builtin.wait_for:
-    timeout: 120
+    timeout: 240
   delegate_to: localhost
 
 - name: Elastic 7 - password command

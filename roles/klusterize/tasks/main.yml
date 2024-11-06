@@ -4,3 +4,6 @@
 
 - name: Operations
   ansible.builtin.include_tasks: operations.yaml
+
+- name: Install Elasticsearch
+  ansible.builtin.include_tasks: install_elastic.yaml
